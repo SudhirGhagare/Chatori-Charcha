@@ -53,7 +53,7 @@ const JoinCreateChat = () => {
     if (validateForm()) {
       //create room
       try {
-        const response = await createRoom(detail.roomId);
+        const response = await createRoom(detail.roomId, detail.groupName);
         console.log(response);
         toast.success("Group created successfully !!!");
         // join the chat

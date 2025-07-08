@@ -7,7 +7,7 @@ import SockJS from "sockjs-client";
 import { baseURL } from "../config/AxiosHelper";
 import { Stomp } from "@stomp/stompjs";
 import toast from "react-hot-toast";
-import { getMessages } from "../services/RoomService";
+import { getMessages, allRooms } from "../services/RoomService";
 import { timeAgo } from "../config/TimeHelpwe";
 import img from "../assets/chat.png";
 import sender from "../assets/sender.png";
@@ -37,7 +37,8 @@ const ChatPage = () => {
     async function loadMessages() {
       try {
         const messages = await getMessages(roomId);
-        //   console.log(messages);
+    
+        console.log(await allRooms());
         setMessages(messages);
       } catch (error) {
         console.log(error);
