@@ -45,6 +45,13 @@ public class RoomController {
 
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Room>> getAllRooms() {
+        List<Room> rooms = roomRepository.findAll();
+        return ResponseEntity.ok(rooms);
+    }
+
+
     //get room
     @GetMapping("/{roomId}")
     public ResponseEntity<?> joinRoom(@PathVariable String roomId) {

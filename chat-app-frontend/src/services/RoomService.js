@@ -9,6 +9,12 @@ export const createRoom = async (roomDeatil)=>{
    return resposne.data;
 }
 
+export const allRooms = async () => {
+   const response = await httpClient.get('/all');
+   console.log("Response All Rooms: ", response.data)
+   return response.data
+}
+
 export const JoinRoom = async (roomId)=>{
    const resposne = await httpClient.get(`/api/v1/rooms/${roomId}`);
    return resposne.data;

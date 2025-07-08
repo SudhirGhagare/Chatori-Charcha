@@ -21,6 +21,7 @@ public class Room {
     @Id
     private String Id; // mongo db unnique indentifier
     private String roomId;
+    private String roomName;
 
     private List<Message> messages = new ArrayList<>();
 
