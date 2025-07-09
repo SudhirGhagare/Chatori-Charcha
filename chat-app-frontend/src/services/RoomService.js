@@ -8,15 +8,15 @@ export const createRoom = async (roomId, roomName) => {
 
   const resposne = await httpClient.post("/api/v1/rooms", payload, {
     headers: {
-      "Content-Type": "text/plain",
+      "Content-Type": "application/json",
     },
   });
   return resposne.data;
 };
 
 export const allRooms = async () => {
-  const response = await httpClient.get("/all");
-  console.log("Response All Rooms: ", response.data);
+  const response = await httpClient.get("/api/v1/rooms/all");
+
   return response.data;
 };
 
@@ -29,6 +29,15 @@ export const getMessages = async (roomId, size = 50, page = 0) => {
   const resposne = await httpClient.get(
     `/api/v1/rooms/${roomId}/messages?size=${size}&page=${page}`
   );
+  return resposne.data;
+};
+
+export const deleteMessage = async (roomId, messageId) => {
+  const resposne = await httpClient.delete(
+    `/${roomId}/messages/${messageId}`
+  );
+
+  console.log("Delete Request: ", httpClient.baseURL + `/${roomId}/messages/${messageId}`);
   return resposne.data;
 };
 

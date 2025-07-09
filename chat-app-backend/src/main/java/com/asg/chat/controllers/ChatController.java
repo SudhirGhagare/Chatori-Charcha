@@ -1,11 +1,16 @@
 package com.asg.chat.controllers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.asg.chat.entities.Message;
 import com.asg.chat.entities.Room;
@@ -46,5 +51,27 @@ public class ChatController {
            return message;
 
     }
-    
+
+    @DeleteMapping("/{roomId}/messages/{index}")
+    public ResponseEntity<?> deleteMessage(@PathVariable String roomId, @PathVariable int index) {
+
+        Room room = roomRepository.findByRoomId(roomId);
+
+        if (room == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Room not found");
+        }
+
+        List<Message> messages = room.getMessages();
+
+        if (index < 0 || index >= messages.size()) {
+            return ResponseEntity.badRequest().body("Invalid message index");
+        }
+
+        messages.remove(index);  // Remove the message by index
+        room.setMessages(messages);
+        roomRepository.save(room);
+
+        return ResponseEntity.ok("Message deleted successfully");
+    }
+
 }

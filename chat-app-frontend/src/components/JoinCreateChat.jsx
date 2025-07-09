@@ -37,7 +37,7 @@ const JoinCreateChat = () => {
         const room = await JoinRoom(detail.roomId);
         toast.success("Group Joined..!!");
         setCurrentUser(detail.userName);
-        setGroupName(room.groupName);
+        setGroupName(room.roomName);
         setRoomId(room.roomId);
         setConnected(true);
         navigate("/chat");

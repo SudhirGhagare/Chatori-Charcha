@@ -7,7 +7,7 @@ import SockJS from "sockjs-client";
 import { baseURL } from "../config/AxiosHelper";
 import { Stomp } from "@stomp/stompjs";
 import toast from "react-hot-toast";
-import { getMessages, allRooms } from "../services/RoomService";
+import { getMessages, allRooms, deleteMessage } from "../services/RoomService";
 import { timeAgo } from "../config/TimeHelpwe";
 import img from "../assets/chat.png";
 import sender from "../assets/sender.png";
@@ -32,22 +32,39 @@ const ChatPage = () => {
   const [input, setInput] = useState("");
   const chatBoxRef = useRef(null);
   const [stompClient, setStompClient] = useState(null);
+  const [allGroupName, setAllGroupName] = useState([]);
 
   useEffect(() => {
-    async function loadMessages() {
+ 
+
+    async function loadAllRooms() {
+      try {
+        const rooms = await allRooms();
+        const allRoomsList = [...rooms];
+        setAllGroupName(allRoomsList);
+      } catch (error) {
+        console.log(error);
+        toast.error("Server Side Error");
+      }
+    }
+
+    if (connected) {
+      loadMessages();
+      loadAllRooms();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+     async function loadMessages() {
       try {
         const messages = await getMessages(roomId);
-    
+
         console.log(await allRooms());
         setMessages(messages);
       } catch (error) {
         console.log(error);
       }
     }
-
-    if (connected) loadMessages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // scroll down
   useEffect(() => {
@@ -84,9 +101,17 @@ const ChatPage = () => {
     if (connected) connectWebSocket();
   }, [roomId, connected]);
 
-  const handleDelete = (message) => {};
+  const handleDelete = async (index) => {
 
-  const handleEdit = (message) => {};
+    const response = await deleteMessage(roomId, index);
+    loadMessages()
+    console.log("Delete Response: ", response);
+
+  };
+
+  const handleEdit = (message) => {
+    setInput(message.content);
+  };
 
   // send messages
   const sendMesssge = async () => {
@@ -119,18 +144,23 @@ const ChatPage = () => {
     <div className="flex h-screen dark:bg-gray-900">
       {/* Sidebar */}
       <aside className="w-1/4 bg-gray-700 text-white shadow-lg border-r-4  hidden md:block">
-        <div className="flex dark:bg-gray-900 h-[10%]">
-          <img src={img} className="p-4 "></img>
-          <h1 className="text-2xl font-bold mt-4  p-2 ">Chatori Charcha</h1>
+        <div className="flex dark:bg-gray-900 h-[10%] flex px-5 py-4">
+          <img src={img} className="me-4"></img>
+          <h2 className="text-2xl font-bold m-2 truncate">Chatori Charcha</h2>
         </div>
 
-        <h2 className="text-2xl font-bold mb-4 border-b border-teal-200 pb-2 ms-4 mt-8">
-          Rooms
-        </h2>
+        <h3 className="text-xl font-bold mb-4 border-b border-teal-200 pb-2 ms-4 mt-8">
+          Recent Room's
+        </h3>
         <ul className="space-y-3 ms-4 me-4">
-          <li className="hover:bg-orange-600 bg-gray-500 transition p-3 rounded cursor-pointer">
-            Yash Rathod
-          </li>
+          {allGroupName.map((room) => (
+            <li
+              key={room.roomId}
+              className="hover:bg-orange-600 bg-gray-500 transition p-3 rounded cursor-pointer"
+            >
+              {room.roomName}
+            </li>
+          ))}
         </ul>
       </aside>
 
@@ -152,13 +182,14 @@ const ChatPage = () => {
         {/* Chat messages */}
         <main
           ref={chatBoxRef}
-          className="flex-1 overflow-auto px-4 py-4 dark:bg-slate-800"
+          className="flex-1 overflow-auto px-4 py-4 dark:bg-slate-800 mb-4"
         >
           {messages.map((message, index) => (
+            console.log("message Index", index + "- "+message),
             <div
               key={index}
               className={`flex ${
-                message.sender === currentUser ? "justify-end" : "justify-start"
+                message.sender === currentUser ? "justify-end" : "justify-start mb-4"
               }`}
             >
               <div
@@ -168,7 +199,7 @@ const ChatPage = () => {
                     : "bg-blue-500"
                 }`}
               >
-                <div className="flex gap-4">
+                <div className="relative group flex gap-4">
                   <img className="h-10 w-10" src={sender} alt="" />
                   <div>
                     <p className="text-sm font-bold">{message.sender}</p>
@@ -179,16 +210,16 @@ const ChatPage = () => {
 
                     {/* Show only if current user is the sender */}
                     {message.sender === currentUser && (
-                      <div className="absolute top-0 right-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-16 right-0 flex flex-row gap-2 opacity-0 group-hover:opacity-100 bg-gray-100 rounded p-2 transition-opacity">
                         <button
                           onClick={() => handleEdit(message)}
-                          className="text-xs text-yellow-300 hover:text-yellow-400"
+                          className="text-xs text-red-600 dark:text-red-400 px-2"
                         >
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(message)}
-                          className="text-xs text-red-400 hover:text-red-500"
+                          onClick={() => handleDelete(index)}
+                          className="text-xs text-red-600 dark:text-red-400 hover:bg-red-600 dark:hover:bg-red-500 hover:text-white hover:text-bold rounded px-2 py-1 transition-colors"
                         >
                           Delete
                         </button>

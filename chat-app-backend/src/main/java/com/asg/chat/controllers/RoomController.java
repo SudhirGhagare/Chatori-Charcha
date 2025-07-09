@@ -1,16 +1,11 @@
 package com.asg.chat.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.asg.chat.entities.Message;
 import com.asg.chat.entities.Room;
@@ -29,16 +24,17 @@ public class RoomController {
 
     //create room
     @PostMapping
-    public ResponseEntity<?> createRoom(@RequestBody String roomId) {
+    public ResponseEntity<?> createRoom(@RequestBody Room newRoom) {
 
-        if (roomRepository.findByRoomId(roomId) != null) {
+        if (roomRepository.findByRoomId(newRoom.getRoomId()) != null) {
             // room is already there
             return ResponseEntity.badRequest().body("Room Already exists");
         }
 
         // create new room
         Room room = new Room();
-        room.setRoomId(roomId);
+        room.setRoomId(newRoom.getRoomId());
+        room.setRoomName(newRoom.getRoomName());
         Room savedRoom = roomRepository.save(room);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRoom);
