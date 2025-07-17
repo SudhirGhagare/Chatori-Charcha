@@ -1,12 +1,12 @@
 import { httpClient } from "../config/AxiosHelper";
 
-export const createRoom = async (roomId, roomName) => {
+export const createRoom = async (roomName, username) => {
   const payload = {
-    roomId: roomId,
+    username: username,
     roomName: roomName,
   };
 
-  const resposne = await httpClient.post("/api/v1/rooms", payload, {
+  const resposne = await httpClient.post("/api/v1/create_room", payload, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -15,33 +15,34 @@ export const createRoom = async (roomId, roomName) => {
 };
 
 export const allRooms = async () => {
-  const response = await httpClient.get("/api/v1/rooms/all");
+  const response = await httpClient.get("/api/v1/all-rooms");
 
   return response.data;
 };
 
 export const JoinRoom = async (roomId) => {
-  const resposne = await httpClient.get(`/api/v1/rooms/${roomId}`);
+  const resposne = await httpClient.get(`/api/v1/get-room/${roomId}`);
   return resposne.data;
 };
 
-export const getMessages = async (roomId, size = 50, page = 0) => {
+export const getMessages = async (roomId) => {
   const resposne = await httpClient.get(
-    `/api/v1/rooms/${roomId}/messages?size=${size}&page=${page}`
+    `/api/v1/get-message/${roomId}`
   );
   return resposne.data;
 };
 
 export const deleteMessage = async (roomId, messageId) => {
   const resposne = await httpClient.delete(
-    `/${roomId}/messages/${messageId}`
+    `api/v1/delete-message/${roomId}/messages/${messageId}`
   );
 
   console.log("Delete Request: ", httpClient.baseURL + `/${roomId}/messages/${messageId}`);
+  console.log("Delete Response: ", resposne.data);
   return resposne.data;
 };
 
-export const getRooms = async () => {
+export const getRooms = async () => { 
   const resposne = await httpClient.get("api/v1/rooms");
   return resposne.data;
 };

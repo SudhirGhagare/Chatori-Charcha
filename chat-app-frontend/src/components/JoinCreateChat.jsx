@@ -35,9 +35,10 @@ const JoinCreateChat = () => {
     if (validateForm()) {
       try {
         const room = await JoinRoom(detail.roomId);
+        console.log("Room : ",room);
         toast.success("Group Joined..!!");
-        setCurrentUser(detail.userName);
-        setGroupName(room.roomName);
+        setCurrentUser(room.userName);
+        setGroupName(room.groupName);
         setRoomId(room.roomId);
         setConnected(true);
         navigate("/chat");
@@ -53,12 +54,11 @@ const JoinCreateChat = () => {
     if (validateForm()) {
       //create room
       try {
-        const response = await createRoom(detail.roomId, detail.groupName);
-        console.log(response);
+        const response = await createRoom(detail.groupName, detail.userName);
         toast.success("Group created successfully !!!");
         // join the chat
         setCurrentUser(detail.userName);
-        setGroupName(detail.groupName);
+        setGroupName(response.groupName);
         setRoomId(response.roomId);
         setConnected(true);
         navigate("/chat");

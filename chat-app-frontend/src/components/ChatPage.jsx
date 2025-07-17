@@ -39,8 +39,14 @@ const ChatPage = () => {
 
     async function loadAllRooms() {
       try {
-        const rooms = await allRooms();
-        const allRoomsList = [...rooms];
+        const response = await allRooms();
+        const rooms = response.rooms;
+        const allRoomsList = 
+          rooms.map((room) => ({
+            roomId: room.roomId,
+            roomName: room.groupName,
+          }));
+        console.log("All Rooms: ", allRoomsList);
         setAllGroupName(allRoomsList);
       } catch (error) {
         console.log(error);
@@ -53,14 +59,14 @@ const ChatPage = () => {
       loadAllRooms();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
      async function loadMessages() {
       try {
-        const messages = await getMessages(roomId);
-
-        console.log(await allRooms());
-        setMessages(messages);
+        const response = await getMessages(roomId);
+        console.log("Messages: ", response.message);
+        setMessages(response.message);
       } catch (error) {
         console.log(error);
       }
@@ -103,7 +109,7 @@ const ChatPage = () => {
 
   const handleDelete = async (index) => {
 
-    const response = await deleteMessage(roomId, index);
+    const response = await deleteMessage(roomId, 1);
     loadMessages()
     console.log("Delete Response: ", response);
 
@@ -205,7 +211,7 @@ const ChatPage = () => {
                     <p className="text-sm font-bold">{message.sender}</p>
                     <p>{message.content}</p>
                     <p className="text-xs text-gray-300">
-                      {timeAgo(message.timestamp)}
+                      {timeAgo(message.created_at)}
                     </p>
 
                     {/* Show only if current user is the sender */}
