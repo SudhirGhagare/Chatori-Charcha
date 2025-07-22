@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import chatIcon from '../assets/chat.png';
+import chatIcon from '../assets/logo.png';
 import { getRooms } from '../services/RoomService';
 import toast from 'react-hot-toast';
+import bg from '../assets/button_background1.png';
 
 const RoomList = () => {
     const [rooms, setRooms] = useState([]);
@@ -13,9 +14,7 @@ const RoomList = () => {
         const loadRooms = async () => {
             try {
                 const response = await getRooms();
-                const sortedRooms = [...response].reverse();
-                setRooms(sortedRooms);
-                console.log(sortedRooms);
+                setRooms(response.rooms);
             } catch (error) {
                 console.log(error);
                 toast.error("Server Side Error");
@@ -35,7 +34,7 @@ const RoomList = () => {
             toast.success("Room ID copied to clipboard!");
             setTimeout(() => {
                 navigate(`/`); // Replace with your target route
-            }, 2000); // 2 seconds delay
+            }, 600);
         } catch (err) {
             toast.error("Failed to copy Room ID");
             console.error(err);
@@ -43,13 +42,13 @@ const RoomList = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-10">
-            <div className="p-8 dark:border-gray-700 border w-full max-w-4xl rounded dark:bg-gray-900 shadow flex flex-col gap-6">
+        <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-[#FDF9F3]">
+            <div className="p-8 border border-[#E48C52] w-full max-w-4xl rounded bg-white shadow flex flex-col gap-6">
                 <div className="flex justify-center">
-                    <img src={chatIcon} className="w-20" alt="Chat Logo" />
+                    <img src={chatIcon} className="w-26 h-20" alt="Chat Logo" />
                 </div>
-                <h1 className="text-3xl font-bold text-center">Available Groups</h1>
-                <p className="text-center text-gray-700 dark:text-gray-300">
+                <h1 className="text-3xl text-[#845D1C] font-bold text-center">Available Topics</h1>
+                <p className="text-center text-[#E48C52]">
                     Jump into a group and start your bakbak session now! 😄 Whether you’re in the mood for memes, music, or motivation – there’s a group waiting for you!
                 </p>
 
@@ -58,15 +57,17 @@ const RoomList = () => {
                     placeholder="Search Room ID..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="p-2 border dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none"
+                    className="p-2 border rounded bg-white text-[#845D1C] border-2 border-[#845D1C] caret-[#E48C52] focus:outline-none"
                 />
 
                 <div className="overflow-y-auto max-h-64 border dark:border-gray-700 rounded">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="sticky top-0 bg-gray-100 dark:bg-gray-800 z-10">
+                        <thead className="sticky top-0  bg-[#E48C52] z-10">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">#</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Room ID</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 text-white uppercase tracking-wider">Sr. no</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 text-white uppercase tracking-wider">Room name</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 text-white uppercase tracking-wider">Room ID</th>
+
                                 <th className="px-6 py-3"></th>
                             </tr>
                         </thead>
@@ -74,16 +75,24 @@ const RoomList = () => {
                             {filteredRooms.length > 0 ? (
                                 filteredRooms.map((room, index) => (
                                     <tr key={room.roomId}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#845D1C]">
                                             {index + 1}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#845D1C]">
+                                            {room.groupName}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#845D1C]">
                                             {room.roomId}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
                                             <button
                                                 onClick={() => handleJoinRoom(room.roomId)}
-                                                className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded shadow"
+                                                className="inline-block px-4 py-2 text-white rounded shadow"
+                                               style={{
+                                                                backgroundImage: `url(${bg})`,
+                                                                backgroundSize: 'cover',
+                                                                backgroundRepeat: 'no-repeat',
+                                                      }}
                                             >
                                                 Copy Room Id
                                             </button>
@@ -92,7 +101,7 @@ const RoomList = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="3" className="text-center py-4 text-gray-500 dark:text-gray-400">
+                                    <td colSpan="3" className="text-center py-4 text-[#845D1C]">
                                         No rooms found.
                                     </td>
                                 </tr>

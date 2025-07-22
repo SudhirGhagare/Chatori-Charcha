@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className='bg-[#FDF9F3]'>
         <JoinCreateChat/>
       </div>
     </>

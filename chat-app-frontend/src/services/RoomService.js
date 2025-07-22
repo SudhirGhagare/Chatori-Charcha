@@ -20,9 +20,9 @@ export const allRooms = async () => {
   return response.data;
 };
 
-export const JoinRoom = async (roomId) => {
-  const resposne = await httpClient.get(`/api/v1/get-room/${roomId}`);
-  return resposne.data;
+export const JoinRoom = async (roomId, username) => {
+  const response = await httpClient.get(`/api/v1/get-room/${roomId}?username=${username}`);
+  return response.data;
 };
 
 export const getMessages = async (roomId) => {
@@ -43,6 +43,6 @@ export const deleteMessage = async (roomId, messageId) => {
 };
 
 export const getRooms = async () => { 
-  const resposne = await httpClient.get("api/v1/rooms");
+  const resposne = await httpClient.get("api/v1/all-rooms");
   return resposne.data;
 };
