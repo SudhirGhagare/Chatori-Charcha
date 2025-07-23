@@ -5,7 +5,7 @@ Loksuvidha's Charcha is a real-time chatroom application where users can randoml
 
 ##  Author
 
-Made with  by **Sudhir Ghagare**
+Made by **Sudhir Ghagare**
 
 - GitHub: [@Sudhir Ghagare](https://github.com/SudhirGhagare)
 - Fork from Project: [Chatori Charcha](https://github.com/GawaliAbhishek/Chatori-Charcha)
