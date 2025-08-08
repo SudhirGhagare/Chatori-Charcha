@@ -9,9 +9,8 @@ build: {
     outDir: 'dist',
   },
   server: {
-    fs: {
-      allow: ['.'],
-    },
-    middlewareMode: false,
+    host: '0.0.0.0',   
+    port: 3000, 
+    allowedHosts: ['ace4acfa6216.ngrok-free.app']        
   },
 })

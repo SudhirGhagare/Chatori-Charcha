@@ -22,6 +22,7 @@ export const allRooms = async () => {
 
 export const JoinRoom = async (roomId, username) => {
   const response = await httpClient.get(`/api/v1/get-room/${roomId}?username=${username}`);
+  console.log("Join Room Response: ", response.data);
   return response.data;
 };
 
@@ -46,3 +47,8 @@ export const getRooms = async () => {
   const resposne = await httpClient.get("api/v1/all-rooms");
   return resposne.data;
 };
+
+export const deleteRoom = async (roomId) => {
+  const resposne = await httpClient.delete(`api/v1/delete-room/${roomId}`);
+  return resposne.data;
+}

@@ -1,0 +1,10 @@
+version: "2"
+authtoken: 30rKbhTTIG537X6sJdmaSqq3xOA_62k9MUgsVGX1K9Ef41Zkt
+tunnels:
+  websocket:
+    proto: http
+    addr: 8080
+  frontend:
+    proto: http
+    addr: 3000  
+
