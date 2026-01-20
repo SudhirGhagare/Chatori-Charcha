@@ -5,12 +5,12 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(),],
-build: {
+  build: {
     outDir: 'dist',
   },
   server: {
-    host: '0.0.0.0',   
-    port: 3000, 
-    allowedHosts: ['ace4acfa6216.ngrok-free.app']        
+    host: '0.0.0.0',
+    port: 3000,
+    allowedHosts: ['b5e8be1ab698.ngrok-free.app']
   },
 })

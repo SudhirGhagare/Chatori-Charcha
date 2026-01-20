@@ -6,7 +6,7 @@ use Ratchet\ConnectionInterface;
 
 class Chat implements MessageComponentInterface {
     protected $clients;
-    protected $rooms;// Flag to track if an offer has been sent
+    protected $rooms;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
@@ -100,7 +100,6 @@ class Chat implements MessageComponentInterface {
     
         foreach ($this->clients as $client) {
 
-            echo "Sending message to client....\n";
             
             if (in_array($data['action'], ['offer', 'answer', 'ice-candidate']) && $client === $from) 
              continue;

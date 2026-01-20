@@ -1,7 +1,7 @@
 <?php
 
 $user = "root";
-$password = "";
+$password = "sudhir28";
 $host = "localhost";
 $database = "chatapp";
 $charset = "utf8mb4";

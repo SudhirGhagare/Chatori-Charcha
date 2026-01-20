@@ -1,6 +1,7 @@
 import { httpClient } from "../config/AxiosHelper";
 
 export const createRoom = async (roomName, username) => {
+
   const payload = {
     username: username,
     roomName: roomName,
@@ -43,7 +44,7 @@ export const deleteMessage = async (roomId, messageId) => {
   return resposne.data;
 };
 
-export const getRooms = async () => { 
+export const getRooms = async () => {
   const resposne = await httpClient.get("api/v1/all-rooms");
   return resposne.data;
 };

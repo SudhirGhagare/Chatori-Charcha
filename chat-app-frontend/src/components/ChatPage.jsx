@@ -45,9 +45,12 @@ const ChatPage = () => {
   const [topicName, setTopicName] = useState("");
   const [noGroupSelected, setNoGroupSelected] = useState(false);
   const [showCallUI, setShowCallUI] = useState(false);
+  const [incomingCall, setIncomingCall] = useState(false);
+  const [pendingOffer, setPendingOffer] = useState(null);
+  const [senderName, setSenderName] = useState("");
 
   useEffect(() => {
-    socket.current = new WebSocket("wss://7247636b9097.ngrok-free.app");
+    socket.current = new WebSocket("wss://5d4eaf58c019.ngrok-free.app");
 
     socket.current.onopen = () => {
       console.log("Connected");
@@ -75,6 +78,18 @@ const ChatPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    socket.current.onmessage = (msg) => {
+      const data = JSON.parse(msg.data);
+
+      if (data.action === "offer" && data.sender !== currentUser) {
+        setSenderName(data.sender);
+        setPendingOffer(data.payload);
+        setIncomingCall(true);
+      }
+    };
+  }, [socket, currentUser]);
 
   // scroll down
   useEffect(() => {
@@ -149,7 +164,7 @@ const ChatPage = () => {
     setNoGroupSelected(false);
 
     // Reconnect and fetch messages for the new room
-    const newSocket = new WebSocket("ws://192.168.1.138:8080");
+    const newSocket = new WebSocket("wss://5d4eaf58c019.ngrok-free.app");
 
     newSocket.onopen = () => {
       console.log("Connected to new room");
@@ -257,7 +272,7 @@ const ChatPage = () => {
   };
 
   const handleLogout = () => {
-    socket.current.close();
+    if (socket.current) { socket.current.close(); }
     setConnected(false);
     setRoomId("");
     setCurrentUser("");
@@ -313,11 +328,10 @@ const ChatPage = () => {
             return (
               <li
                 key={room.roomId}
-                className={`transition p-3 rounded cursor-pointer flex justify-between items-center ${
-                  isActive
-                    ? "bg-[#E48C52] text-white font-bold"
-                    : "bg-white border-[#845D1C] border-2 text-[#E48C52]"
-                }`}
+                className={`transition p-3 rounded cursor-pointer flex justify-between items-center ${isActive
+                  ? "bg-[#E48C52] text-white font-bold"
+                  : "bg-white border-[#845D1C] border-2 text-[#E48C52]"
+                  }`}
               >
                 <span
                   className="flex-1 cursor-pointer"
@@ -405,6 +419,10 @@ const ChatPage = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
+
+                  if (!socket.current)
+                    socket.current = new WebSocket("wss://4acda3c1b0dc.ngrok-free.app");
+
                   socket.current.send(
                     JSON.stringify({
                       action: "join",
@@ -421,8 +439,6 @@ const ChatPage = () => {
                 />
               </button>
 
-            
-
               <button
                 onClick={handleLogout}
                 className="bg-white border-2 border-[#845D1C] text-[#845D1C] hover:bg-red-500 hover:text-white hover:border-red-500 px-4 py-2 rounded"
@@ -433,13 +449,47 @@ const ChatPage = () => {
           </header>
         )}
 
-          {showCallUI && (
-                <VideoCall
-                  socket={socket}
-                  roomId={roomId}
-                  user={currentUser}
-                />
-              )}
+        {incomingCall && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg text-center">
+              <h2 className="text-lg text-gray-600 font-bold mb-4">
+                Incoming Video Call from <span className="bold">{senderName}</span>
+              </h2>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => {
+                    setShowCallUI(true);
+                  }}
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => {
+                    setIncomingCall(false);
+                    setPendingOffer(null);
+                  }}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                  Reject
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showCallUI && (
+          <VideoCall
+            socket={socket}
+            roomId={roomId}
+            user={currentUser}
+            setIncomingCall={setIncomingCall}
+            setShowCallUI={setShowCallUI}
+            isIncomingCall={incomingCall}
+            pendingOffer={pendingOffer} />
+        )}
+
+
 
         {/* Chat messages */}
         <main
@@ -452,36 +502,32 @@ const ChatPage = () => {
               (
                 <div
                   key={index}
-                  className={`flex ${
-                    message.sender === currentUser
-                      ? "justify-end"
-                      : "justify-start mb-4"
-                  }`}
+                  className={`flex ${message.sender === currentUser
+                    ? "justify-end"
+                    : "justify-start mb-4"
+                    }`}
                 >
                   <div
-                    className={`my-2 p-2 max-w-xs rounded ${
-                      message.sender === currentUser
-                        ? "bg-white border-2 border-[#845D1C] "
-                        : "bg-[#E48C52] text-white"
-                    }`}
+                    className={`my-2 p-2 max-w-xs rounded ${message.sender === currentUser
+                      ? "bg-white border-2 border-[#845D1C] "
+                      : "bg-[#E48C52] text-white"
+                      }`}
                   >
                     <div className="relative group flex gap-4">
                       <img
-                        className={`h-10 w-10 rounded-full ${
-                          message.sender === currentUser
-                            ? "border border-black "
-                            : ""
-                        }`}
+                        className={`h-10 w-10 rounded-full ${message.sender === currentUser
+                          ? "border border-black "
+                          : ""
+                          }`}
                         src={sender}
                         alt=""
                       />
                       <div>
                         <p
-                          className={` ${
-                            message.sender === currentUser
-                              ? "text-sm text-[#845D1C] font-bold"
-                              : "text-white"
-                          }`}
+                          className={` ${message.sender === currentUser
+                            ? "text-sm text-[#845D1C] font-bold"
+                            : "text-white"
+                            }`}
                         >
                           {message.sender}
                         </p>
@@ -494,22 +540,20 @@ const ChatPage = () => {
                           />
                         ) : (
                           <p
-                            className={` ${
-                              message.sender === currentUser
-                                ? "text-sm text-gray-500"
-                                : "text-white"
-                            }`}
+                            className={` ${message.sender === currentUser
+                              ? "text-sm text-gray-500"
+                              : "text-white"
+                              }`}
                           >
                             {message.content}
                           </p>
                         )}
                         <div className="flex justify-end">
                           <p
-                            className={` ${
-                              message.sender === currentUser
-                                ? "text-sm text-black"
-                                : "text-sm text-white"
-                            }`}
+                            className={` ${message.sender === currentUser
+                              ? "text-sm text-black"
+                              : "text-sm text-white"
+                              }`}
                           >
                             {timeAgo(message.created_at)}
                           </p>
